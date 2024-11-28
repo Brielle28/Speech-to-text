@@ -1,15 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "./Context/Userprovider";
 
 const VoiceWaveLines = ({ isRecording = false }) => {
+  const { transcript } = useContext(UserContext);
   const [rotation, setRotation] = useState(0);
-  // const {isRecording} = useContext(UserContext)
+  const transcriptRef = useRef(null); // Reference for transcript container
+
   useEffect(() => {
     const interval = setInterval(() => {
       setRotation((prev) => (prev + 1) % 360);
     }, 50);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Scroll to the bottom when the transcript updates
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [transcript]); // Runs when transcript changes
 
   const generatePoints = (count, radius, variation, speedFactor, direction) => {
     const points = [];
@@ -84,21 +93,16 @@ const VoiceWaveLines = ({ isRecording = false }) => {
         `}
           </style>
         </div>
-        <div className={`w-[70%] md:w-[60%] overflow-scroll h-[80px] md:h-[125px] text-center ${isRecording ? "flex" : "hidden"}`}>
-          <h1>
-           
-            In the ever-evolving world of technology, the demand for software developers continues to grow at an unprecedented rate. From building intricate websites to creating powerful applications, the role of a software developer is multifaceted and dynamic. Whether coding in JavaScript, Python, C++, or Ruby, each language offers unique strengths and challenges that shape the way developers approach problem-solving.
 
-            In recent years, the rise of modern web development frameworks like React, Angular, and Vue.js has revolutionized the way we build user interfaces. These frameworks allow developers to create fast, efficient, and highly interactive applications that run seamlessly across a variety of devices. React, for example, has become particularly popular due to its component-based architecture, which allows for the creation of reusable components that can be efficiently rendered and updated.
-
-            On the backend, technologies like Node.js, Django, and Ruby on Rails continue to power the server-side of applications, enabling developers to create robust, scalable systems that can handle millions of requests per day. With the growth of cloud computing platforms like AWS, Azure, and Google Cloud, developers now have access to an array of tools and services that make it easier to deploy and maintain their applications in a secure and cost-effective manner.
-
-            In addition to technical skills, modern software developers must also possess strong problem-solving abilities, critical thinking skills, and a willingness to continuously learn. The technology landscape is constantly shifting, with new frameworks, libraries, and tools emerging regularly. As such, developers must stay up-to-date with the latest trends and best practices to remain competitive in the job market.
-
-            Moreover, the importance of collaboration and teamwork in software development cannot be overstated. Whether working in a large corporation or as part of a small startup, developers often work alongside designers, project managers, quality assurance testers, and other stakeholders to ensure that an application meets the needs of its users. Effective communication and the ability to work well in a team are essential skills for any successful developer.
-
-            The future of software development is bright, with exciting advancements on the horizon. Artificial intelligence, machine learning, and blockchain are just a few of the emerging technologies that are poised to change the way we build and interact with software. As these technologies continue to mature, developers will be at the forefront of driving innovation and creating the next generation of software that will shape our world. like any changes.
-          </h1>
+        <div
+          ref={transcriptRef} // Attach reference to container
+          className={`w-[70%] md:w-[60%] overflow-scroll h-[80px] md:h-[125px] text-center ${isRecording ? "flex" : "hidden"}`}
+        >
+          {transcript ? (
+            <p>{transcript}</p>
+          ) : (
+            <p className="text-gray-400">Listening...</p> // Fallback text
+          )}
         </div>
       </div>
     </>
