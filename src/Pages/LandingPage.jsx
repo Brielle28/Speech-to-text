@@ -9,7 +9,7 @@ const LandingPage = () => {
   return (
     <>
     <Layout>
-      <div className="mt-0 md:mt-0">
+      <div className="mt-16 md:mt-10">
         <VoiceWaveLines isRecording={isRecording}/>
         </div> 
     </Layout>
