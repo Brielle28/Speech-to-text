@@ -53,7 +53,7 @@ After installing the project, follow these steps to run it locally:
 
 1. Start the development server:
     ```bash
-    npm start
+    npm run dev
     ```
 
 2. Open your browser and navigate to `http://localhost:3000` to use the application.
@@ -63,10 +63,6 @@ After installing the project, follow these steps to run it locally:
    - The speech will be transcribed into text in real time.
    - Click **stop** 🛑 to end the recording.
    - You can **copy** 📋 or **delete** 🗑️ the transcribed text using the provided buttons.
-
-### Key Commands:
-- **npm start** - Starts the development server.
-- **npm run build** - Creates a production build.
 
 ## Features ✨
 - **Real-Time Transcription** 🗣️➡️📝: Converts speech to text as you speak.
@@ -81,9 +77,7 @@ Check out a live demo of the **Speech-to-Text Web Application**:
 
 - [Speech-to-text](https://voice-to-speech-three.vercel.app/?vercelToolbarCode=a7-GSVrcHVvQU76) 
 
-Or view a short video showing the app in action:
-
-- [Video Demo](#) (insert video link once available)
+https://github.com/user-attachments/assets/716c95dc-3599-4dc0-8ebe-6d5c5a4f7aa4
 
 ## Contributing 🤝
 Contributions are welcome! If you want to contribute to this project, follow these steps:
@@ -104,8 +98,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Contact 📧
 If you have any questions or suggestions, feel free to reach out!
 
-- **Email:** example@domain.com
-- **GitHub:** [username](https://github.com/username)
+- **Email:** chukwuemerieclara@gmail.com
+- **GitHub:** [username](https://github.com/Brielle28)
 
 ## Acknowledgments 🙏
 - **Web Speech API**: For providing the core speech-to-text functionality.
