@@ -2,8 +2,9 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { UserContext } from "./Context/Userprovider";
 
 const VoiceWaveLines = ({ isRecording = false }) => {
-  const { transcript } = useContext(UserContext);
+  const { transcript, getRecordingDuration, formatDuration } = useContext(UserContext);
   const [rotation, setRotation] = useState(0);
+  const [currentDuration, setCurrentDuration] = useState(0);
   const transcriptRef = useRef(null); // Reference for transcript container
 
   useEffect(() => {
@@ -12,6 +13,19 @@ const VoiceWaveLines = ({ isRecording = false }) => {
     }, 50);
     return () => clearInterval(interval);
   }, []);
+
+  // Update duration every second when recording
+  useEffect(() => {
+    let interval;
+    if (isRecording) {
+      interval = setInterval(() => {
+        setCurrentDuration(getRecordingDuration());
+      }, 1000);
+    } else {
+      setCurrentDuration(0);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording, getRecordingDuration]);
 
   useEffect(() => {
     // Scroll to the bottom when the transcript updates
@@ -71,11 +85,41 @@ const VoiceWaveLines = ({ isRecording = false }) => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center w-full ">
-        <div className={`flex items-center justify-center ${isRecording ? "mt-0" : "mt-10"} bg-transparent w-[60%] h-[60%] md:h-full md:w-full`}>
-          <svg viewBox="-100 -100 200 200" className="w-64 h-64">
-            {renderWaveforms()}
-          </svg>
+      <div className="flex flex-col items-center justify-center w-full px-6">
+        {/* Main Visual Area */}
+        <div className={`flex flex-col items-center justify-center ${isRecording ? "mt-4" : "mt-8"} meeting-container w-full max-w-4xl p-8`}>
+          
+          {/* Status Indicator */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 pulse-glow' : 'bg-gray-400'}`}></div>
+              <span className="text-sm font-medium text-white/80">
+                {isRecording ? 'Recording in progress...' : 'Ready to record'}
+              </span>
+            </div>
+            {isRecording && (
+              <div className="text-sm font-mono text-white/60 bg-white/10 px-3 py-1 rounded-full">
+                {formatDuration(currentDuration)}
+              </div>
+            )}
+          </div>
+
+          {/* Wave Visualization */}
+          <div className="flex items-center justify-center mb-8">
+            <svg viewBox="-100 -100 200 200" className="w-48 h-48 md:w-64 md:h-64">
+              {renderWaveforms()}
+            </svg>
+          </div>
+
+          {/* Instructions */}
+          {!isRecording && (
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold text-white mb-2">Start Your Meeting Transcription</h2>
+              <p className="text-white/70 text-sm max-w-md">
+                Click the microphone button below to begin recording. Your speech will be transcribed in real-time.
+              </p>
+            </div>
+          )}
 
           <style>
             {`
@@ -94,15 +138,31 @@ const VoiceWaveLines = ({ isRecording = false }) => {
           </style>
         </div>
 
+        {/* Transcript Display */}
         <div
-          ref={transcriptRef} // Attach reference to container
-          className={`w-[70%] md:w-[60%] overflow-scroll h-[80px] md:h-[125px] text-center ${isRecording ? "flex" : "hidden"}`}
+          ref={transcriptRef}
+          className={`w-full max-w-4xl meeting-container p-6 mt-6 ${isRecording ? "block" : "hidden"}`}
         >
-          {transcript ? (
-            <p>{transcript}</p>
-          ) : (
-            <p className="text-gray-400">Listening...</p> // Fallback text
-          )}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Live Transcript</h3>
+            <div className="flex items-center gap-2 text-sm text-white/60">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span>Live</span>
+            </div>
+          </div>
+          
+          <div className="transcript-text min-h-[120px] max-h-[300px] overflow-y-auto">
+            {transcript ? (
+              <p className="whitespace-pre-wrap">{transcript}</p>
+            ) : (
+              <div className="flex items-center justify-center h-32">
+                <div className="text-center">
+                  <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
+                  <p className="text-white/60">Listening for speech...</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

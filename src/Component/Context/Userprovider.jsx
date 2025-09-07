@@ -11,6 +11,10 @@ const UserProvider = ({ children }) => {
   const [transcript, setTranscript] = useState(""); // Live transcript
   const [savedTranscripts, setSavedTranscripts] = useState([]); // Finalized transcripts
   const [currentLanguage, setCurrentLanguage] = useState("en-US"); // Default language
+  const [isSupported, setIsSupported] = useState(true); // Browser support check
+  const [error, setError] = useState(null); // Error state
+  const [recordingStartTime, setRecordingStartTime] = useState(null); // Recording duration
+  const [transcriptHistory, setTranscriptHistory] = useState([]); // Meeting history
 
   const recognitionRef = useRef(null); // Reference for SpeechRecognition instance
 
@@ -30,19 +34,34 @@ const UserProvider = ({ children }) => {
     const savedArray = saved ? JSON.parse(saved) : [];
     setSavedTranscripts(savedArray);
 
+    // Load transcript history
+    const history = localStorage.getItem("transcriptHistory");
+    const historyArray = history ? JSON.parse(history) : [];
+    setTranscriptHistory(historyArray);
+
     // Check for Web Speech API support
-    if (!("webkitSpeechRecognition" in window)) {
-      console.error("Web Speech API is not supported in your browser.");
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      setIsSupported(false);
+      setError("Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.");
+      toast.error("Browser not supported for speech recognition");
       return;
     }
 
     // Initialize SpeechRecognition
-    recognitionRef.current = new window.webkitSpeechRecognition();
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
     const recognition = recognitionRef.current;
 
     recognition.interimResults = true;
     recognition.continuous = true;
     recognition.lang = currentLanguage;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setRecordingStartTime(Date.now());
+      setError(null);
+      toast.success("Recording started");
+    };
 
     recognition.onresult = (event) => {
       let liveText = "";
@@ -54,6 +73,31 @@ const UserProvider = ({ children }) => {
 
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
+      setError(event.error);
+      
+      switch (event.error) {
+        case 'no-speech':
+          toast.warning("No speech detected. Please try speaking louder.");
+          break;
+        case 'audio-capture':
+          toast.error("Microphone not found. Please check your microphone permissions.");
+          break;
+        case 'not-allowed':
+          toast.error("Microphone access denied. Please allow microphone access and refresh the page.");
+          break;
+        case 'network':
+          toast.error("Network error. Please check your internet connection.");
+          break;
+        default:
+          toast.error(`Speech recognition error: ${event.error}`);
+      }
+      
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      setRecordingStartTime(null);
     };
 
     // Cleanup
@@ -110,27 +154,60 @@ const UserProvider = ({ children }) => {
 
   // Start speech recording
   const startRecording = () => {
+    if (!isSupported) {
+      toast.error("Speech recognition is not supported in your browser");
+      return;
+    }
+
     if (recognitionRef.current && !isRecording) {
-      recognitionRef.current.start();
-      setIsRecording(true);
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to start recording:", err);
+        toast.error("Failed to start recording. Please try again.");
+      }
     }
   };
 
   // Stop speech recording
   const stopRecording = () => {
     if (recognitionRef.current && isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
+      try {
+        recognitionRef.current.stop();
+        setIsRecording(false);
 
-      if (transcript.trim()) {
-        setSavedTranscripts((prev) => {
-          const updated = [...prev, transcript];
-          localStorage.setItem("transcripts", JSON.stringify(updated));
-          return updated;
-        });
+        if (transcript.trim()) {
+          const meetingEntry = {
+            id: Date.now(),
+            transcript: transcript,
+            timestamp: new Date().toISOString(),
+            duration: recordingStartTime ? Date.now() - recordingStartTime : 0,
+            language: currentLanguage
+          };
+
+          setSavedTranscripts((prev) => {
+            const updated = [...prev, transcript];
+            localStorage.setItem("transcripts", JSON.stringify(updated));
+            return updated;
+          });
+
+          setTranscriptHistory((prev) => {
+            const updated = [...prev, meetingEntry];
+            localStorage.setItem("transcriptHistory", JSON.stringify(updated));
+            return updated;
+          });
+
+          toast.success("Meeting transcript saved successfully");
+        }
+
+        setTranscript(""); // Clear live transcript
+        setRecordingStartTime(null);
+      } catch (err) {
+        console.error("Failed to stop recording:", err);
+        toast.error("Failed to stop recording properly");
       }
-
-      setTranscript(""); // Clear live transcript
     }
   };
 
@@ -140,6 +217,29 @@ const UserProvider = ({ children }) => {
     isRecording ? stopRecording() : startRecording();
   };
 
+  // Get recording duration
+  const getRecordingDuration = () => {
+    if (!recordingStartTime) return 0;
+    return Math.floor((Date.now() - recordingStartTime) / 1000);
+  };
+
+  // Format duration
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Clear all transcripts
+  const clearAllTranscripts = () => {
+    setSavedTranscripts([]);
+    setTranscriptHistory([]);
+    setTranscript("");
+    localStorage.removeItem("transcripts");
+    localStorage.removeItem("transcriptHistory");
+    toast.success("All transcripts cleared");
+  };
+
   // Context value
   const value = {
     iconColor,
@@ -147,11 +247,18 @@ const UserProvider = ({ children }) => {
     toggleState,
     transcript,
     savedTranscripts,
+    transcriptHistory,
     copyToClipboard,
     stopRecording,
     currentLanguage,
     setLanguage,
     resetLanguage,
+    isSupported,
+    error,
+    recordingStartTime,
+    getRecordingDuration,
+    formatDuration,
+    clearAllTranscripts,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
