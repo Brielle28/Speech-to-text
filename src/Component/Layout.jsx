@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
             />
             <BrowserWarning />
             <Navbar />
-            <main className="flex-grow">
+            <main className="flex-grow pt-16">
                 {children} {/* This will render the page content dynamically */}
             </main>
             <Footer /> {/* The footer will always be at the bottom */}

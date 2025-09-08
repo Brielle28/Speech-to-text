@@ -199,7 +199,7 @@ const UserProvider = ({ children }) => {
             return updated;
           });
 
-          toast.success("Meeting transcript saved successfully");
+          toast.success("Speech transcript saved successfully");
         }
 
         setTranscript(""); // Clear live transcript

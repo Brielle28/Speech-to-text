@@ -3,7 +3,7 @@ import { UserContext } from "./Context/Userprovider";
 import { FaDownload, FaTrash, FaEye, FaCalendarAlt, FaClock, FaGlobe } from "react-icons/fa";
 import { toast } from 'react-toastify';
 
-const MeetingHistory = () => {
+const SpeechHistory = () => {
   const { transcriptHistory, clearAllTranscripts } = useContext(UserContext);
   const [selectedTranscript, setSelectedTranscript] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -13,7 +13,7 @@ const MeetingHistory = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `meeting-${new Date(transcript.timestamp).toISOString().split('T')[0]}.txt`;
+    a.download = `speech-${new Date(transcript.timestamp).toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -53,12 +53,12 @@ const MeetingHistory = () => {
     return (
       <button
         onClick={() => setShowHistory(true)}
-        className="btn-secondary flex items-center gap-2 px-4 py-2"
+        className="btn-secondary flex items-center gap-2 px-3 py-2"
       >
         <FaCalendarAlt className="text-sm" />
-        <span>Meeting History</span>
+        <span className="hidden sm:inline">History</span>
         {transcriptHistory.length > 0 && (
-          <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+          <span className="bg-pink-500 text-white text-xs px-2 py-1 rounded-full">
             {transcriptHistory.length}
           </span>
         )}
@@ -68,9 +68,9 @@ const MeetingHistory = () => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="meeting-container w-full max-w-4xl max-h-[80vh] overflow-hidden">
+      <div className="speech-container w-full max-w-4xl max-h-[80vh] overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-xl font-semibold text-white">Meeting History</h2>
+          <h2 className="text-xl font-semibold text-white">Speech History</h2>
           <div className="flex items-center gap-2">
             {transcriptHistory.length > 0 && (
               <button
@@ -94,7 +94,7 @@ const MeetingHistory = () => {
           {transcriptHistory.length === 0 ? (
             <div className="text-center py-12">
               <FaCalendarAlt className="text-4xl text-white/30 mx-auto mb-4" />
-              <p className="text-white/60">No meeting transcripts yet</p>
+              <p className="text-white/60">No speech transcripts yet</p>
               <p className="text-white/40 text-sm mt-2">Start recording to create your first transcript</p>
             </div>
           ) : (
@@ -155,10 +155,10 @@ const MeetingHistory = () => {
       {/* Transcript Viewer Modal */}
       {selectedTranscript && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-60 flex items-center justify-center p-4">
-          <div className="meeting-container w-full max-w-3xl max-h-[80vh] overflow-hidden">
+          <div className="speech-container w-full max-w-3xl max-h-[80vh] overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div>
-                <h3 className="text-lg font-semibold text-white">Meeting Transcript</h3>
+                <h3 className="text-lg font-semibold text-white">Speech Transcript</h3>
                 <p className="text-white/60 text-sm">
                   {formatDate(selectedTranscript.timestamp)} • {formatDuration(selectedTranscript.duration)} • {getLanguageName(selectedTranscript.language)}
                 </p>
@@ -191,4 +191,4 @@ const MeetingHistory = () => {
   );
 };
 
-export default MeetingHistory;
+export default SpeechHistory;
