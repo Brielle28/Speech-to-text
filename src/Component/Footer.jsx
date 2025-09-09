@@ -31,7 +31,7 @@ const Footer = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 pt-6 pb-6 text-center">
+    <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 pt-6 pb-6 text-center bg-pink-500">
       {/* Main Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-6">
         {/* Secondary Actions */}
