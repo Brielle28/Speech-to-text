@@ -63,7 +63,7 @@ const VoiceWaveLines = ({ isRecording = false }) => {
         `}
       </style>
       
-      <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6">
+      <div className="flex flex-col items-center justify-center w-full px-4 sm:px-6 pb-8">
         {/* Main Visual Area */}
         <div className={`flex flex-col items-center justify-center ${isRecording ? "mt-4" : "mt-8"} speech-container w-full max-w-4xl p-6 sm:p-8 bounce-in`}>
           
@@ -101,7 +101,7 @@ const VoiceWaveLines = ({ isRecording = false }) => {
         {/* Transcript Display */}
         <div
           ref={transcriptRef}
-          className={`w-full max-w-4xl speech-container p-4 sm:p-6 mt-6 ${isRecording ? "block bounce-in" : "hidden"}`}
+          className={`w-full max-w-4xl speech-container p-4 sm:p-6 mt-6 mb-32 ${isRecording ? "block bounce-in" : "hidden"}`}
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white">Live Transcript</h3>
@@ -111,7 +111,7 @@ const VoiceWaveLines = ({ isRecording = false }) => {
             </div>
           </div>
           
-          <div className="transcript-text min-h-[120px] max-h-[300px] overflow-y-auto">
+          <div className="transcript-text min-h-[120px] max-h-[200px] overflow-y-auto">
             {transcript ? (
               <p className="whitespace-pre-wrap">{transcript}</p>
             ) : (

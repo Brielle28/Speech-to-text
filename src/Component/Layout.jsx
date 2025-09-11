@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
             />
             <BrowserWarning />
             <Navbar />
-            <main className="flex-grow pt-16 h-full">
+            <main className="flex-grow pt-16 pb-32">
                 {children}
             </main>
             <Footer />

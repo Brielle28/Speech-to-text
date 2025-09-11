@@ -31,8 +31,8 @@ const Footer = () => {
   };
 
   return (
-    <div className="w-full bg-gradient-to-r from-gray-800 to-gray-900 border-t border-white/10">
-      <div className="flex flex-col items-center justify-center w-full px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
+    <div className="w-full bg-transparent border-t border-white/20 fixed bottom-0 left-0 right-0 z-40">
+      <div className="flex flex-col items-center justify-center w-full px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-4">
         
         {/* Main Controls - Always Horizontal */}
         <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full max-w-6xl mb-4">
