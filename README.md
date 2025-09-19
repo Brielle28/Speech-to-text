@@ -115,7 +115,7 @@ Check out a live demo of the **SpeechFlow Web Application**:
 
 - [Speech-to-text](https://voice-to-speech-three.vercel.app/?vercelToolbarCode=a7-GSVrcHVvQU76) 
 
-https://github.com/user-attachments/assets/716c95dc-3599-4dc0-8ebe-6d5c5a4f7aa4
+https://github.com/user-attachments/assets/67c88b09-1e31-41ef-a6a0-e35f1d7af598
 
 ## Contributing 🤝
 Contributions are welcome! If you want to contribute to this project, follow these steps:
